@@ -1,13 +1,15 @@
 body{
     height: 100vh;
-    color: darkcyan;
-    background-color: lightcyan;
+   
+    color: rgb(181, 238, 90);
+    background-color: rgba(224, 235, 255, 0.496);
     justify-content: center;
     text-align: center;
     align-items: center;
     margin: 100px;
     margin-bottom: 20px;
     width: 100vh;
+    border-radius: 5px;
 }
 
 
@@ -22,6 +24,12 @@ body{
 }
 
 
+.nav{
+  margin-right: 10px;
+  text-align: end;
+  justify-content: end;
+  margin: 10px;
+}
 
 .todo h3{
   font-family: sans-serif serif monospace;
@@ -40,16 +48,8 @@ body{
   align-items: center;
   text-align: center;
   border-radius: 5px;
-  background-color: rgb(243, 240, 237);
+  background-color: rgb(87, 231, 15);
 }
-
-
-.todo button{
-  height: 3%;
-  border-radius: 4px;
-  background-color: rgb(227, 132, 55);
-}
-
 
 .todo ul{
   height: 100%;
@@ -61,14 +61,12 @@ body{
 .list{
    margin: 10px;
    padding: 10px;
+   color: blueviolet;
+   font-weight: 600;
 }
 
-.btn{
-  padding: 5px;
-  margin: 20px;
-  height: 20px;
-  width: 50px;
-  margin-left: 50px;
-  background-color: rgb(76, 0, 255);
-  color: blue;
-}
+  .btn{
+    height: 6%;
+    background-color: rebeccapurple;
+    margin: 5px;
+  }

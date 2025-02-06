@@ -1,13 +1,23 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import {BrowserRouter as Router , Routes, Route, NavLink, Navigate} from 'react-router-dom';
+import AddTask from './components/AddTask';
+import Update from './components/Update';
+import Delete from './components/Delete';
+import Login from './components/Login';
+
 import './App.css';
 
 function App() {
   const [tasks, setTasks] = useState('');
   const [taskList, setTaskList] = useState([]);
   const [editIndex, setEditIndex] = useState(null);
+  const[isLoggedIn, setIsLoggedIn] = useState(false);
+  const[role, setRole] = useState(null);
+  
+ 
 
   const handleTasks = () =>{
-      if(tasks.trim() !== ''){
+      if(tasks.trim() !== '' && (role === 'Admin' || role === 'user1')){
           if(editIndex !== null){
             const updatedTasks = taskList.map((task, index) =>
             index === editIndex ? tasks : task);
@@ -23,42 +33,67 @@ function App() {
   
 
   const handleEdit = (index) => {
-    setTasks(taskList[index]);
-    setEditIndex(index);
+    if(role === 'Admin'){
+      setTasks(taskList[index]);
+      setEditIndex(index);
+    }
   };
 
   const handleDelete = (index) => {
-    const updatedTasks = taskList.filter((_, taskIndex) => taskIndex !== index);
-    setTaskList(updatedTasks);
+    if(role === 'Admin'){
+      const updatedTasks = taskList.filter((_, taskIndex) => taskIndex !== index);
+      setTaskList(updatedTasks);
+    }
   };
 
   return (
-    <>
-      <div className='todo'>
+    <Router>
+
+      <div  className='todo'>
+        <nav className='nav'>
+          <NavLink style={{margin:"10px"}} to="/">Home</NavLink>
+         
+          <NavLink style={{margin:"10px"}} to="/login">Login</NavLink>
+        </nav>
+
         <h3>Todo App</h3>
 
-        <input
-          type="text"
-          value={tasks}
-          placeholder="Enter your Task"
-          onChange={(event) => setTasks(event.target.value)}
-        />
+        <Routes>
+          <Route
+            path="/"
+            element={
+              isLoggedIn ? (
+                <>
+                  {role === 'Admin' || role === 'user1' ? (
+                    <AddTask tasks={tasks} setTasks={setTasks} editIndex={editIndex} handleTasks={handleTasks} />
+                  ) : (
+                    <p>You can only view tasks.</p>
+                  )}
 
-        <button onClick={handleTasks}>
-          {editIndex !== null ? 'Update Task' : 'Add Task'}
-        </button>
+                  <ul>
+                    {taskList.map((task, index) => (
+                      <li className="list" key={index}>
+                        {task}
+                        {role === 'Admin' && (
+                          <>
+                            <Update index={index} handleEdit={handleEdit} />
+                            <Delete index={index} handleDelete={handleDelete} />
+                          </>
+                        )}
+                      </li>
+                    ))}
+                  </ul>
+                </>
+              ) :
+              <p style={{color:"red", fontSize:"20px"}}>User Must have Login to  create your Todos</p>
+            }
+          />
 
-        <ul>
-          {taskList.map((task, index) => (
-            <li className='list' key={index}>
-              {task}
-              <button className='btn' onClick={() => handleEdit(index)}>Edit</button>
-              <button className='btn' onClick={() => handleDelete(index)}>Delete</button>
-            </li>
-          ))}
-        </ul>
+          <Route path="/login" element={<Login setIsLoggedIn={setIsLoggedIn} setRole={setRole} />} />
+          
+        </Routes>
       </div>
-    </>
+    </Router>
   );
 }
 
