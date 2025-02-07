@@ -1,96 +1,57 @@
-import { useState, useEffect } from 'react';
-import {BrowserRouter as Router , Routes, Route, NavLink, Navigate} from 'react-router-dom';
-import AddTask from './components/AddTask';
-import Update from './components/Update';
-import Delete from './components/Delete';
-import Login from './components/Login';
+import { useState } from "react";
+import { BrowserRouter as Router, Routes, Route, NavLink } from "react-router-dom";
+import Home from "./routes/Home";
+import SignUp from "./routes/SignUp";
+import Login from "./routes/Login";
+import Logout from "./routes/Logout"; 
+import TaskList from "./components/TaskList";
 
-import './App.css';
+
+import "./App.css";
 
 function App() {
-  const [tasks, setTasks] = useState('');
-  const [taskList, setTaskList] = useState([]);
-  const [editIndex, setEditIndex] = useState(null);
-  const[isLoggedIn, setIsLoggedIn] = useState(false);
-  const[role, setRole] = useState(null);
-  
- 
+  const [isLoggedIn, setIsLoggedIn] = useState(() => {
+    return localStorage.getItem("isLoggedIn");
+  });
 
-  const handleTasks = () =>{
-      if(tasks.trim() !== '' && (role === 'Admin' || role === 'user1')){
-          if(editIndex !== null){
-            const updatedTasks = taskList.map((task, index) =>
-            index === editIndex ? tasks : task);
-            setTaskList(updatedTasks);
-            setEditIndex(null);
-          }else{
-            setTaskList([...taskList, tasks]);
-          }
-          setTasks('');
-      }
-  }
+  const [isSignIn, setIsSignIn] = useState(() => {
+    return localStorage.getItem("isSignIn");
+  });
 
-  
-
-  const handleEdit = (index) => {
-    if(role === 'Admin'){
-      setTasks(taskList[index]);
-      setEditIndex(index);
-    }
-  };
-
-  const handleDelete = (index) => {
-    if(role === 'Admin'){
-      const updatedTasks = taskList.filter((_, taskIndex) => taskIndex !== index);
-      setTaskList(updatedTasks);
-    }
-  };
 
   return (
     <Router>
+      <>
+      <nav className="nav">
+          <nav className="home">
+          <NavLink  to="/">Home</NavLink>
+          </nav>
+          <nav>
+                {
+                  isLoggedIn ? (
+                    <>
+                      <NavLink to="/Logout">Logout</NavLink>
+                    </>
+                  ) : (
+                    <>
+                      <NavLink to="/Login">Login</NavLink>
+                      <NavLink to="/SignUp">Sign Up</NavLink>
+                    </>
+                  )
+                }
+              </nav>
 
-      <div  className='todo'>
-        <nav className='nav'>
-          <NavLink style={{margin:"10px"}} to="/">Home</NavLink>
-         
-          <NavLink style={{margin:"10px"}} to="/login">Login</NavLink>
         </nav>
-
-        <h3>Todo App</h3>
+      </>
+      <div>
+        
 
         <Routes>
-          <Route
-            path="/"
-            element={
-              isLoggedIn ? (
-                <>
-                  {role === 'Admin' || role === 'user1' ? (
-                    <AddTask tasks={tasks} setTasks={setTasks} editIndex={editIndex} handleTasks={handleTasks} />
-                  ) : (
-                    <p>You can only view tasks.</p>
-                  )}
-
-                  <ul>
-                    {taskList.map((task, index) => (
-                      <li className="list" key={index}>
-                        {task}
-                        {role === 'Admin' && (
-                          <>
-                            <Update index={index} handleEdit={handleEdit} />
-                            <Delete index={index} handleDelete={handleDelete} />
-                          </>
-                        )}
-                      </li>
-                    ))}
-                  </ul>
-                </>
-              ) :
-              <p style={{color:"red", fontSize:"20px"}}>User Must have Login to  create your Todos</p>
-            }
-          />
-
-          <Route path="/login" element={<Login setIsLoggedIn={setIsLoggedIn} setRole={setRole} />} />
-          
+          <Route path="/" element={<Home />} />
+          <Route path="/SignUp" element={<SignUp setIsLoggedIn={setIsLoggedIn} setIsSignIn={setIsSignIn} />} />
+          <Route path="/Login" element={<Login setIsLoggedIn={setIsLoggedIn} setIsSignIn={setIsSignIn} />} />
+          <Route path="/Logout" element={<Logout setIsLoggedIn={setIsLoggedIn}  />} />
+          <Route path="/tasks" element={isLoggedIn ? <TaskList /> : <div>Please log in to manage tasks.</div>} />
         </Routes>
       </div>
     </Router>
